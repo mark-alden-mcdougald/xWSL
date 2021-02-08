@@ -1,7 +1,8 @@
 @ECHO OFF & NET SESSION >NUL 2>&1 
 IF %ERRORLEVEL% == 0 (ECHO Administrator check passed...) ELSE (ECHO You need to run this command with administrative rights.  Is User Account Control enabled? && pause && goto ENDSCRIPT)
 COLOR 1F
-SET GITORG=DesktopECHO
+SET GITORG=mark-alden-mcdougald
+SET UBUVER=1604
 SET GITPRJ=xWSL
 SET BRANCH=master
 SET BASE=https://github.com/%GITORG%/%GITPRJ%/raw/%BRANCH%
@@ -24,6 +25,7 @@ IF EXIST "%DISTRO%" (ECHO. & ECHO Folder exists with that name, choose a new fol
 WSL.EXE -d %DISTRO% -e . > "%TEMP%\InstCheck.tmp"
 FOR /f %%i in ("%TEMP%\InstCheck.tmp") do set CHKIN=%%~zi 
 IF %CHKIN% == 0 (ECHO. & ECHO There is a WSL distribution registered with that name; uninstall it or choose a new name. & PAUSE & GOTO DI)
+SET UBUVER=1604& SET /p UBUVER=Ubuntu version or hit Enter to use default [1604]: 
 SET RDPPRT=3399& SET /p RDPPRT=Port number for xRDP traffic or hit Enter to use default [3399]: 
 SET SSHPRT=3322& SET /p SSHPRT=Port number for SSHd traffic or hit Enter to use default [3322]: 
                  SET /p WINDPI=Set a custom DPI scale, or hit Enter for Windows default [%WINDPI%]: 
@@ -36,8 +38,8 @@ IF "%_rlt%"=="\\" SET DISTROFULL=%CD%%DISTRO%
 SET GO="%DISTROFULL%\LxRunOffline.exe" r -n "%DISTRO%" -c
 
 REM ## Download Ubuntu and install packages
-IF NOT EXIST "%TEMP%\Ubuntu2004.zip" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://aka.ms/wslubuntu2004 -destination '%TEMP%\Ubuntu2004.zip'"
-POWERSHELL.EXE -command "Expand-Archive -Path '%TEMP%\Ubuntu2004.zip' -DestinationPath '%TEMP%' -Force
+IF NOT EXIST "%TEMP%\Ubuntu%UBUVER%.zip" POWERSHELL.EXE -Command "Start-BitsTransfer -source https://aka.ms/wslubuntu%UBUVER% -destination '%TEMP%\Ubuntu%UBUVER%.zip'"
+POWERSHELL.EXE -command "Expand-Archive -Path '%TEMP%\Ubuntu%UBUVER%.zip' -DestinationPath '%TEMP%' -Force
 %DISTROFULL:~0,1%: & MKDIR "%DISTROFULL%" & CD "%DISTROFULL%" & MKDIR logs > NUL
 (ECHO [xWSL Inputs] && ECHO. && ECHO.   Distro: %DISTRO% && ECHO.     Path: %DISTROFULL% && ECHO. RDP Port: %RDPPRT% && ECHO. SSH Port: %SSHPRT%  && ECHO.DPI Scale: %WINDPI% && ECHO.) > ".\logs\%TIME:~0,2%%TIME:~3,2%%TIME:~6,2% xWSL Inputs.log"
 IF NOT EXIST "%TEMP%\LxRunOffline.exe" POWERSHELL.EXE -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 ; wget https://github.com/DDoSolitary/LxRunOffline/releases/download/v3.5.0/LxRunOffline-v3.5.0-msvc.zip -UseBasicParsing -OutFile '%TEMP%\LxRunOffline-v3.5.0-msvc.zip' ; Expand-Archive -Path '%TEMP%\LxRunOffline-v3.5.0-msvc.zip' -DestinationPath '%TEMP%' -Force" > NUL
@@ -61,7 +63,7 @@ ECHO @RD /S /Q "%DISTROFULL%"                                                   
 ECHO Installing xWSL Distro [%DISTRO%] to "%DISTROFULL%" & ECHO This will take a few minutes, please wait... 
 IF %DEFEXL%==X (POWERSHELL.EXE -Command "wget %BASE%/excludeWSL.ps1 -UseBasicParsing -OutFile '%DISTROFULL%\excludeWSL.ps1'" & START /WAIT /MIN "Add exclusions in Windows Defender" "POWERSHELL.EXE" "-ExecutionPolicy" "Bypass" "-Command" ".\excludeWSL.ps1" "%DISTROFULL%" &  DEL ".\excludeWSL.ps1")
 
-ECHO:& ECHO [%TIME:~0,8%] Installing Ubuntu 20.04 LTS (~1m00s)
+ECHO:& ECHO [%TIME:~0,8%] Installing Ubuntu %UBUVER% LTS (~1m00s)
 START /WAIT /MIN "Installing Distro Base..." "%TEMP%\LxRunOffline.exe" "i" "-n" "%DISTRO%" "-f" "%TEMP%\install.tar.gz" "-d" "%DISTROFULL%"
 (FOR /F "usebackq delims=" %%v IN (`PowerShell -Command "whoami"`) DO set "WAI=%%v") & ICACLS "%DISTROFULL%" /grant "%WAI%":(CI)(OI)F > NUL
 (COPY /Y "%TEMP%\LxRunOffline.exe" "%DISTROFULL%" > NUL ) & "%DISTROFULL%\LxRunOffline.exe" sd -n "%DISTRO%"
