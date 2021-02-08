@@ -24,7 +24,7 @@ You will see best performance connecting from the local machine or over gigabit 
 
 **INSTRUCTIONS:  From an elevated prompt, change to your desired install directory and type/paste the following command:**
 
-    PowerShell -executionpolicy bypass -command "wget https://github.com/DesktopECHO/xWSL/raw/master/xWSL.cmd -UseBasicParsing -OutFile xWSL.cmd ; .\xWSL.cmd"
+    PowerShell -executionpolicy bypass -command "wget https://github.com/mark-alden-mcdougald/xWSL/raw/master/xWSL.cmd -UseBasicParsing -OutFile xWSL.cmd ; .\xWSL.cmd"
 
 You will be asked a few questions.  The installer script finds the current DPI scaling in Windows, you can set your own value if preferred:
 
@@ -32,6 +32,7 @@ You will be asked a few questions.  The installer script finds the current DPI s
 
      Enter a unique name for your xWSL distro or hit Enter to use default.
      Keep this name simple, no space or underscore characters [xWSL]: XFCE416
+     Ubuntu version or hit Enter to use default [1604]: 2004
      Port number for xRDP traffic or hit Enter to use default [3399]: 13399
      Port number for SSHd traffic or hit Enter to use default [3322]: 13322
      Set a custom DPI scale, or hit Enter for Windows default [1.5]: 1.25
@@ -108,10 +109,10 @@ Example of conversion to WSL2 on machine name "ENVY":
 From a security standpoint, it would be best to fork this project so you (and only you) control the packages and files in the repository.
 
 - Sign into GitHub and fork this project
-- Edit ```xWSL.cmd```.  On line 2 you will see ```SET GITORG=DesktopECHO``` - Change ```DesktopECHO``` to the name of your own repository.
+- Edit ```xWSL.cmd```.  On line 2 you will see ```SET GITORG=mark-alden-mcdougald``` - Change ```mark-alden-mcdougald``` to the name of your own repository.
 - Customize the script any way you like.
 - Launch the script using your repository name:
- ```PowerShell -executionpolicy bypass -command "wget https://github.com/YOUR-REPO-NAME/xWSL/raw/master/xWSL.cmd -UseBasicParsing -OutFile xWSL.cmd ; .\xWSL.cmd"```
+ ```PowerShell -executionpolicy bypass -command "wget https://github.com/mark-alden-mcdougald/xWSL/raw/master/xWSL.cmd -UseBasicParsing -OutFile xWSL.cmd ; .\xWSL.cmd"```
 
 **Quirks / Limitations / Additional Info:**
 
